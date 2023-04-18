@@ -1,19 +1,17 @@
-let store = window.localStorage; 
+const store = window.localStorage; 
 const content = document.querySelector('.content');
 const modalOverlay = document.querySelector('.overlay');
-const modalForm = document.querySelector('form'); 
-const modalBtn = modalForm.querySelector('button'); 
-const modalCloseBtn = document.querySelector('.close__modal'); 
-const btnAddCat = document.querySelector('.add__cat');
+const modalForm = document.querySelector('form');
+const modalCloseBtn = document.querySelector('.close-modal'); 
+const btnAddCat = document.querySelector('.add-cat');
 const defaultImg = 'images/default.jpg';
-const cardLike = document.querySelector('.card__like');
 
 
 const refreshCatsAndContent = () => {
     content.innerHTML = '';
     requestsCards.getAllCats().then(res => {
-		store.setItem('Мои коты:', JSON.stringify(res));
-		const cards = JSON.parse(store.getItem('Мои коты:'));
+		store.setItem(strMyCats, JSON.stringify(res));
+		const cards = JSON.parse(store.getItem(strMyCats));
         res.forEach(element => {
         content.insertAdjacentHTML('afterbegin', createCard(element));
         });
@@ -38,7 +36,7 @@ btnAddCat.addEventListener('click', () => {
 					cat.favorite = false;
 				}
 				
-				requestsCards.addCat({...cat, id:getNewIdOfCat()}).then(() => { 
+				requestsCards.addCat({...cat}).then(() => { 
 				modalOverlay.classList.remove('active');
 				addCatLocalStorage(cat);
 				refreshCardsLocalStorage(); 
@@ -64,7 +62,7 @@ content.addEventListener('click', (event) => {
 			requestsCards.getCatById(idCat).then((res) => {
 			openCatCardPopup(res);
 					});
-				break;
+			break;
 			case 'cat-card-update': 
 			modalOverlay.classList.add('active');
 			requestsCards.getCatById(idCat).then((res) => {
@@ -110,7 +108,7 @@ content.addEventListener('click', (event) => {
 				default: break;
 			}
 		}
-		if (event.target.classList.contains('card__like')) {
+		if (event.target.classList.contains('card-like')) {
 			const idCatLike = event.target.dataset.id;
 			const obj = {
 				id: idCatLike,
@@ -135,40 +133,30 @@ modalCloseBtn.addEventListener('click', () => {
 
 const refreshCardsLocalStorage = () => {
 	content.innerHTML = '';
-	const cards = JSON.parse(store.getItem('Мои коты:'));
+	const cards = JSON.parse(store.getItem(strMyCats));
 	cards.forEach(element => {
         content.insertAdjacentHTML('afterbegin', createCard(element));
     });
 };
 
 const addCatLocalStorage = (cat) => {
-	store.setItem('Мои коты:', JSON.stringify([...JSON.parse(store.getItem('Мои коты:')), cat]));
+	store.setItem(strMyCats, JSON.stringify([...JSON.parse(store.getItem(strMyCats)), cat]));
 };
 
 const deleteCatLocalStorage = (catId) => {
-	store.setItem('Мои коты:', JSON.stringify(JSON.parse(store.getItem('Мои коты:'))
+	store.setItem(strMyCats, JSON.stringify(JSON.parse(store.getItem(strMyCats))
 	.filter((el) => el.id != catId))
 	);
 };
 
-const getNewIdOfCat = () => {
-	let res = JSON.parse(store.getItem('Мои коты:')); 
-		if (res.length) {
-		console.log(Math.max(...res.map((el) => el.id)) + 1);
-		return Math.max(...res.map((el) => el.id)) + 1; 
-		} else {
-		return 1;
-	}
-};
-
 const createCard = (cat) => {
 	return `<div class="cat-card">
-        <i class="fa-heart card__like ${cat.favorite ? 'fa-solid' : 'fa-regular'}" data-id='${cat.id}'></i>
-            <div class="image_card" >
+        <i class="fa-heart card-like ${cat.favorite ? 'fa-solid' : 'fa-regular'}" data-id='${cat.id}'></i>
+            <div class="image-card">
                 <img src=${cat.image !== '' ? cat.image : defaultImg} /> 
             </div>
-            <div class="card_title">Имя: ${cat.name}</div>
-            <div class="card_age">Возраст: ${!!cat.age && cat.age >= 0 ? cat.age : 'Не указан'} </div>
+            <div class="card-title">Имя: ${cat.name}</div>
+            <div>Возраст: ${!!cat.age && cat.age >= 0 ? cat.age : 'Не указан'} </div>
             <div class="cat-card-btns">
                 <button class="cat-card-view" value=${cat.id}>Просмотр</button>
                 <button class="cat-card-update" value=${cat.id}>Изменение</button> 
@@ -181,15 +169,15 @@ const createCatCardPopup = (cat) => {
 	return `<div class="popup-wrapper-cat-card active">
         <div class="popup-cat-card active">
         <div class="popup-close-cat-card btn"><i class="fa-solid fa-xmark"></i></div>
-        <div class="popup__card">
-            <div class="popup__card-info">
+        <div class="popup-card">
+            <div class="popup-card-info">
                 <div>Имя: ${cat.name}</div>
                 <div>Описание: ${cat.description}</div>
                 <div>Возраст: ${!!cat.age && cat.age >= 0 ? cat.age : 'Не указан'}</div>
                 <div>Рейтинг: ${!!cat.rate ? cat.rate : 'Не указан'}</div>
                 <div>Отношение: ${cat.favorite ? 'Лайк' : 'Дизлайк, отписка'}</div>
             </div>
-            <div class="popup__card-img" style="background: url(${cat.image !== '' ? cat.image : defaultImg}); background-size: cover;"></div>
+            <div class="popup-card-img" style="background: url(${cat.image !== '' ? cat.image : defaultImg}); background-size: cover;"></div>
         </div>
         </div>
     </div>`;

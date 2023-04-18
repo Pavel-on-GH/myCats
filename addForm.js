@@ -1,7 +1,8 @@
 const firstUser = "pavel-on-gh";
 const path = `https://cats.petiteweb.dev/api/single/${firstUser}/`;
+const strMyCats = `Мои коты:`;
+const errorMessage = error => alert(`Упс, что-то пошло не так... Ваша ошибка: \n${error}`);
 
-const testPic = 'https://i.pinimg.com/736x/fb/ff/f6/fbfff6a63b4c0931887c8a399234fe07--nature-instagram.jpg';
 
 class WorkingWithCards {
 	constructor() {
@@ -9,7 +10,7 @@ class WorkingWithCards {
 	}
 
 	
-	addCat = (cat, reject) => {
+	addCat = (cat) => {
 		return fetch(`${this.path}add`, {
 			method: 'POST',
 			headers: {
@@ -20,8 +21,8 @@ class WorkingWithCards {
 		.then(res => {
 			if (res.status === 200) {
 			res.json()}
-			else {console.log ('Упс, что-то пошло не так...')}
 			})
+		.catch (errorMessage)
 	};
 
 	deleteCat = (id) => {
@@ -29,10 +30,10 @@ class WorkingWithCards {
             method: 'DELETE'
         })
 		.then(res => {
-		if (res.status === 200) {
-		res.json()}
-		else {console.log ('Упс, что-то пошло не так...')}
-		})
+			if (res.status === 200) {
+			res.json()}
+			})
+		.catch (errorMessage)
 	}
 
 	getAllCats = () => {
@@ -40,27 +41,22 @@ class WorkingWithCards {
 		.then((res) => {
 			return res.ok 
 			? res.json() 
-			: Promise.reject('Упс, что-то пошло не так...');
-		});
+			: Promise.reject(error => console.error(error));
+		})
+		.catch (errorMessage)
 	};
 
-    getAllCatsId = (cat) => {
-		return fetch(`${this.path}ids`)
-		.then((res) => {
-			return res.ok 
-			? res.json() 
-			: Promise.reject('Упс, что-то пошло не так...');
-		});
-	};
 
     getCatById = (id) => {
         return fetch(`${this.path}show/${id}`)
 		.then((res) => {
 			return res.ok 
 			? res.json() 
-			: Promise.reject('Упс, что-то пошло не так...');
-		});
-    }
+			: Promise.reject(error => console.error(error));
+		})
+		.catch (errorMessage)
+    };
+
 
 	updateCat = (newCat) => {
 		return fetch(`${this.path}update/${newCat.id}`, {
@@ -73,8 +69,8 @@ class WorkingWithCards {
 		.then(res => {
 			if (res.status === 200) {
 			res.json()}
-			else {console.log ('Упс, что-то пошло не так...')}
 			})
+		.catch (errorMessage)
 	};
 
 }
